@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Election Votes Recorder</title>
+    <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@7.14.7/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      // Define the Politician model
+      class Politician {
+        constructor(name) {
+          this.name = name;
+          this.votes = 0;
+        }
+
+        updateVotes(votes) {
+          this.votes = votes;
+        }
+      }
+
+      // Define the Election component
+      class Election extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {
+            politicians: [
+              new Politician('Politician 1'),
+              new Politician('Politician 2'),
+              new Politician('Politician 3')
+            ],
+            votesPerPolitician: 0,
+            totalVotes: 0
+          };
+        }
+
+        handleInputChange(event) {
+          this.setState({ votesPerPolitician: parseInt(event.target.value) });
+        }
+
+        recordVotes() {
+          const { politicians, votesPerPolitician } = this.state;
+          politicians.forEach(politician => politician.updateVotes(votesPerPolitician));
+          this.calculateTotalVotes();
+        }
+
+        async calculateTotalVotes() {
+          const { politicians } = this.state;
+          let totalVotes = 0;
+
+          politicians.forEach(politician => (totalVotes += politician.votes));
+
+          this.setState({ totalVotes });
+        }
+
+        render() {
+          const { politicians, votesPerPolitician, totalVotes } = this.state;
+
+          return (
+            <div>
+              <h2>Election Votes Recorder</h2>
+
+              <div>
+                <label>
+                  Number of votes per politician:
+                  <input
+                    type="number"
+                    value={votesPerPolitician}
+                    onChange={event => this.handleInputChange(event)}
+                  />
+                </label>
+                <button onClick={() => this.recordVotes()}>Record Votes</button>
+              </div>
+
+              <h3>Politicians:</h3>
+              <ul>
+                {politicians.map((politician, index) => (
+                  <li key={index}>
+                    {politician.name} - Votes: {politician.votes}
+                  </li>
+                ))}
+              </ul>
+
+              <p>Total number of votes: {totalVotes}</p>
+            </div>
+          );
+        }
+      }
+
+      // Render the Election component
+      ReactDOM.render(<Election />, document.getElementById('root'));
+    </script>
+  </body>
+</html>
